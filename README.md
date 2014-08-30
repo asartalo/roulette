@@ -1,4 +1,4 @@
-roulette
+Roulette
 ========
 
-A roulette-selection implementation
+A simple Roulette-selection implementation.
