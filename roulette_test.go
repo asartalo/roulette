@@ -1,6 +1,7 @@
 package roulette
 
 import (
+	"math"
 	"testing"
 )
 
@@ -31,4 +32,39 @@ func TestCorrectness(t *testing.T) {
 	if result2 != "A" && result3 != "B" && result1 != "C" {
 		t.Fatal("Roulette is not using number generator properly.")
 	}
+}
+
+func round(n float64) int {
+	return int(math.Floor(n + 0.5))
+}
+
+func percent(part int, whole int) int {
+	return round(float64(part) / float64(whole) * 100)
+}
+
+func around(n int, ref int) bool {
+	return (n >= (ref-1) || n <= (ref+1))
+}
+
+func TestProbabilityDistribution(t *testing.T) {
+	r := NewRoulette()
+	r.Add("A", 1)
+	r.Add("B", 1)
+	r.Add("C", 2)
+
+	runs := 10000
+	results := make(map[string]int)
+	for i := 0; i < runs; i++ {
+		results[r.Roll().(string)] += 1
+	}
+
+	pA := percent(results["A"], runs)
+	pC := percent(results["C"], runs)
+	if !around(pA, 25) {
+		t.Fatalf("Roll results are not weighted accordingly. A appears %d%% rather than %d%%", pA, 25)
+	}
+	if !around(pC, 50) {
+		t.Fatalf("Roll results are not weighted accordingly. C appears %d%% rather than %d%%", pC, 50)
+	}
+
 }
