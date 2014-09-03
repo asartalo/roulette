@@ -8,6 +8,7 @@ import (
 type Roulette interface {
 	Add(item interface{}, weight float64)
 	Roll() interface{}
+	LessIsBetter()
 }
 
 type slice struct {
@@ -16,13 +17,23 @@ type slice struct {
 }
 
 type roulette struct {
-	slices []slice
-	total  float64
-	rng    func() float64
+	slices  []slice
+	total   float64
+	rng     func() float64
+	minimum bool
+}
+
+func (r *roulette) LessIsBetter() {
+	r.minimum = true
 }
 
 func (r *roulette) Add(item interface{}, weight float64) {
-	r.total += weight
+	if r.minimum {
+		r.total += 1 / (weight + 0.0000000000000001)
+	} else {
+		r.total += weight
+	}
+
 	r.slices = append(r.slices, slice{item: item, position: r.total})
 }
 

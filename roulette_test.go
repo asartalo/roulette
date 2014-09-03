@@ -43,7 +43,7 @@ func percent(part int, whole int) int {
 }
 
 func around(n int, ref int) bool {
-	return (n >= (ref-1) || n <= (ref+1))
+	return (n >= (ref-1) && n <= (ref+1))
 }
 
 func TestProbabilityDistribution(t *testing.T) {
@@ -61,10 +61,34 @@ func TestProbabilityDistribution(t *testing.T) {
 	pA := percent(results["A"], runs)
 	pC := percent(results["C"], runs)
 	if !around(pA, 25) {
-		t.Fatalf("Roll results are not weighted accordingly. A appears %d%% rather than %d%%", pA, 25)
+		t.Fatalf("Roll results are not weighted accordingly. A appears %d%% rather than %d%%", pA, 5)
 	}
 	if !around(pC, 50) {
 		t.Fatalf("Roll results are not weighted accordingly. C appears %d%% rather than %d%%", pC, 50)
+	}
+
+}
+
+func TestProbabilityDistributionMinimum(t *testing.T) {
+	r := NewRoulette()
+	r.LessIsBetter()
+	r.Add("A", 1)
+	r.Add("B", 1)
+	r.Add("C", 2)
+
+	runs := 10000
+	results := make(map[string]int)
+	for i := 0; i < runs; i++ {
+		results[r.Roll().(string)] += 1
+	}
+
+	pA := percent(results["A"], runs)
+	pC := percent(results["C"], runs)
+	if !around(pA, 40) {
+		t.Fatalf("Roll results are not weighted accordingly. A appears %d%% rather than %d%%", pA, 40)
+	}
+	if !around(pC, 20) {
+		t.Fatalf("Roll results are not weighted accordingly. C appears %d%% rather than %d%%", pC, 20)
 	}
 
 }
